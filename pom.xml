@@ -15,8 +15,10 @@
 
     <!-- App dependencies -->
     <kotlin.version>1.8.10</kotlin.version>
+    <mordant.version>2.0.0-beta11</mordant.version>
 
     <!-- Test dependencies -->
+    <assertk.version>0.25</assertk.version>
     <junit.version>5.9.2</junit.version>
 
     <!-- Build dependencies -->
@@ -28,6 +30,11 @@
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
       <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.ajalt.mordant</groupId>
+        <artifactId>mordant-jvm</artifactId>
+        <version>${mordant.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -42,6 +49,12 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.willowtreeapps.assertk</groupId>
+        <artifactId>assertk-jvm</artifactId>
+        <version>${assertk.version}</version>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 
