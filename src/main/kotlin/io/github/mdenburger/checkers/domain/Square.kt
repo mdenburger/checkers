@@ -1,5 +1,8 @@
 package io.github.mdenburger.checkers.domain
 
+/**
+ * Possible states of squares on a checkerboard.
+ */
 enum class Square {
     EMPTY,
     BLACK_MAN,

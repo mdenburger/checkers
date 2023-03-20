@@ -9,6 +9,7 @@ class ConsoleGameIO : GameIO {
     private val terminal = Terminal()
 
     override fun drawBoard(board: GameBoard) {
+        println()
         terminal.drawBoard(board)
     }
 
@@ -21,6 +22,7 @@ class ConsoleGameIO : GameIO {
     }
 
     override fun showWinner(winner: Color?) {
+        println()
         if (winner == null) {
             println("It's a draw!")
         } else {
