@@ -5,11 +5,6 @@ data class GameState(
     val activePlayer: Color,
     val done: Boolean
 ) {
-    fun getWinner(): Color? {
-        // TODO determine winner
-        return null
-    }
-
     fun isValidMove(move: Move): Boolean =
         when (move) {
             is Move.Slide -> board.isValidSlide(move, activePlayer)
@@ -29,6 +24,33 @@ data class GameState(
             )
             Move.Quit -> this.copy(done = true)
         }
+
+    fun getWinner(): Color? =
+        if (allValidMoves(Color.White).isEmpty()) {
+            Color.Black
+        } else if (allValidMoves(Color.Black).isEmpty()) {
+            Color.White
+        } else {
+            null
+        }
+
+    fun allValidMoves(player: Color): List<Move> {
+        val validMoves = mutableListOf<Move>()
+
+        for (number in 1..TOTAL_SQUARE_COUNT) {
+            val squareNumber = number.square
+
+            validMoves += squareNumber.slideOptions(player)
+                .map { Move.Slide(squareNumber, it) }
+                .filter { board.isValidSlide(it, player) }
+
+            validMoves += squareNumber.jumpOptions()
+                .map { Move.Jump(squareNumber, listOf(it.to)) }
+                .filter { board.isValidJump(it, player) }
+        }
+
+        return validMoves
+    }
 
     companion object {
         fun initial() = GameState(
