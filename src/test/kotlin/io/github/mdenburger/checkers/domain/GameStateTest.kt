@@ -28,6 +28,9 @@ class GameStateTest {
             32-27
             12x21x32
             37x28x19
+            14x23
+            34-29
+            23x34
             """.trimIndent()
 
         val terminal = Terminal()
