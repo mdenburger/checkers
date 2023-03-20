@@ -13,7 +13,7 @@ data class GameState(
     fun isValidMove(move: Move): Boolean =
         when (move) {
             is Move.Slide -> board.isValidSlide(move, activePlayer)
-            is Move.Jump -> false // jumps not implemented yet
+            is Move.Jump -> board.isValidJump(move, activePlayer)
             Move.Quit -> true
         }
 
@@ -23,7 +23,10 @@ data class GameState(
                 board = board.applySlide(move),
                 activePlayer = activePlayer.opponent()
             )
-            is Move.Jump -> TODO("jumps not implemented yet")
+            is Move.Jump -> this.copy(
+                board = board.applyJump(move),
+                activePlayer = activePlayer.opponent()
+            )
             Move.Quit -> this.copy(done = true)
         }
 

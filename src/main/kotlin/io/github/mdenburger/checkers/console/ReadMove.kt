@@ -27,15 +27,22 @@ private fun readMove(): Move? =
         Move.Quit
     }
 
-private fun parseMove(s: String): Move? =
+fun parseMove(s: String): Move? =
     if (s.contains("-")) {
         val numbers = s.split("-")
         val from = numbers[0].toSquareNumber()
         val to = numbers[1].toSquareNumber()
         Move.Slide(from, to)
+    } else if (s.contains("x")) {
+        val numbers = s.split("x")
+        val from = numbers[0].toSquareNumber()
+        val to = numbers.drop(1).map { number -> number.toSquareNumber() }
+        Move.Jump(from, to)
+    } else if (s.contains("q")) {
+        Move.Quit
     } else {
         null
     }
 
-fun String.toSquareNumber(): SquareNumber =
+private fun String.toSquareNumber(): SquareNumber =
     SquareNumber(this.toInt())

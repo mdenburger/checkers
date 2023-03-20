@@ -10,7 +10,13 @@ sealed interface Move {
     data class Jump(
         val from: SquareNumber,
         val to: List<SquareNumber>
-    ) : Move
+    ) : Move {
+        fun firstStep(): Jump =
+            Jump(from, listOf(to.first()))
+
+        fun remainingSteps(): Jump =
+            Jump(to.first(), to.drop(1))
+    }
 
     object Quit: Move
 }

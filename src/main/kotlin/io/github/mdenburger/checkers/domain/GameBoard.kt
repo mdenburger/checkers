@@ -17,13 +17,50 @@ class GameBoard(private val squares: List<Square>) {
     fun isValidSlide(slide: Move.Slide, activePlayer: Color): Boolean {
         return squares[slide.from.index()].color() == activePlayer &&
                 squares[slide.to.index()] == Square.EMPTY &&
-                slide.from.slideDestinations(activePlayer).contains(slide.to)
+                slide.from.slideOptions(activePlayer).contains(slide.to)
     }
 
     fun applySlide(slide: Move.Slide): GameBoard {
         val nextSquares = squares.toMutableList()
         nextSquares[slide.to.index()] = squares[slide.from.index()]
         nextSquares[slide.from.index()] = Square.EMPTY
+        return GameBoard(nextSquares)
+    }
+
+    fun isValidJump(jump: Move.Jump, activePlayer: Color): Boolean =
+        squares[jump.from.index()].color() == activePlayer &&
+        this.isValidJumpPath(jump, activePlayer)
+
+    private fun isValidJumpPath(jump: Move.Jump, activePlayer: Color): Boolean {
+        if (jump.to.isEmpty()) {
+            return true
+        }
+
+        val jumpOptions = jump.from.jumpOptions()
+
+        return jumpOptions.any { option ->
+            option.to == jump.to.first() &&
+            squares[option.to.index()] == Square.EMPTY &&
+            squares[option.captured.index()].color() == activePlayer.opponent()
+        } && this.applyJump(jump.firstStep()).isValidJumpPath(jump.remainingSteps(), activePlayer)
+    }
+
+    fun applyJump(jump: Move.Jump): GameBoard =
+        if (jump.to.isEmpty()) {
+            this
+        } else {
+            this.applyFirstStep(jump).applyJump(jump.remainingSteps())
+        }
+
+    private fun applyFirstStep(jump: Move.Jump): GameBoard {
+        val nextSquares = squares.toMutableList()
+        nextSquares[jump.to.first().index()] = squares[jump.from.index()]
+        nextSquares[jump.from.index()] = Square.EMPTY
+
+        val jumpOption = jump.from.jumpOptions().find { option -> option.to == jump.to.first() }
+            ?: error("Cannot find jump options from $jump")
+        nextSquares[jumpOption.captured.index()] = Square.EMPTY
+
         return GameBoard(nextSquares)
     }
 
