@@ -11,6 +11,10 @@ const val TOTAL_SQUARE_COUNT = SIZE * SQUARES_PER_ROW
 
 class GameBoard(private val squares: List<Square>) {
 
+    init {
+        require(squares.size == TOTAL_SQUARE_COUNT)
+    }
+
     fun rows(): List<List<Square>> =
         squares.chunked(SQUARES_PER_ROW)
 

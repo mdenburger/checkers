@@ -5,7 +5,9 @@ sealed interface Move {
     data class Slide(
         val from: SquareNumber,
         val to: SquareNumber
-    ) : Move
+    ) : Move {
+        override fun toString() = "$from-$to"
+    }
 
     data class Jump(
         val from: SquareNumber,
@@ -16,6 +18,8 @@ sealed interface Move {
 
         fun remainingSteps(): Jump =
             Jump(to.first(), to.drop(1))
+
+        override fun toString() = "${from}x${to.joinToString("x")}"
     }
 
     object Quit: Move

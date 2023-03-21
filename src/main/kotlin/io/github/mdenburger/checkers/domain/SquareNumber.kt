@@ -104,6 +104,8 @@ value class SquareNumber(private val value: Int) {
 
     private fun upRightTwice(): Int =
         this.upRight().square.upRight()
+
+    override fun toString() = value.toString()
 }
 
 val Int.square: SquareNumber

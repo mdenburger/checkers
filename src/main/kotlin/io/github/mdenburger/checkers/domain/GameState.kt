@@ -7,7 +7,8 @@ data class GameState(
 ) {
     fun isValidMove(move: Move): Boolean =
         when (move) {
-            is Move.Slide -> board.isValidSlide(move, activePlayer)
+            is Move.Slide -> board.isValidSlide(move, activePlayer) &&
+                    this.allValidJumps(activePlayer).isEmpty()
             is Move.Jump -> board.isValidJump(move, activePlayer)
             Move.Quit -> true
         }
@@ -18,10 +19,12 @@ data class GameState(
                 board = board.applySlide(move),
                 activePlayer = activePlayer.opponent()
             )
+
             is Move.Jump -> this.copy(
                 board = board.applyJump(move),
                 activePlayer = activePlayer.opponent()
             )
+
             Move.Quit -> this.copy(done = true)
         }
 
@@ -34,23 +37,28 @@ data class GameState(
             null
         }
 
-    fun allValidMoves(player: Color): List<Move> {
-        val validMoves = mutableListOf<Move>()
+    private fun allValidMoves(player: Color): List<Move> =
+        allValidSlides(player) + allValidJumps(player)
 
-        for (number in 1..TOTAL_SQUARE_COUNT) {
-            val squareNumber = number.square
+    private fun allValidSlides(player: Color): List<Move.Slide> =
+        (1..TOTAL_SQUARE_COUNT)
+            .map { it.square }
+            .flatMap { allValidSlidesFrom(it, player) }
 
-            validMoves += squareNumber.slideOptions(player)
-                .map { Move.Slide(squareNumber, it) }
-                .filter { board.isValidSlide(it, player) }
+    private fun allValidSlidesFrom(from: SquareNumber, player: Color): List<Move.Slide> =
+        from.slideOptions(player)
+            .map { to -> Move.Slide(from, to) }
+            .filter { slide -> board.isValidSlide(slide, player) }
 
-            validMoves += squareNumber.jumpOptions()
-                .map { Move.Jump(squareNumber, listOf(it.to)) }
-                .filter { board.isValidJump(it, player) }
-        }
+    private fun allValidJumps(player: Color): List<Move.Jump> =
+        (1..TOTAL_SQUARE_COUNT)
+            .map { it.square }
+            .flatMap { allValidJumpsFrom(it, player) }
 
-        return validMoves
-    }
+    private fun allValidJumpsFrom(from: SquareNumber, player: Color): List<Move.Jump> =
+        from.jumpOptions()
+            .map { jumpOption -> Move.Jump(from, listOf(jumpOption.to)) }
+            .filter { jump -> board.isValidJump(jump, player) }
 
     companion object {
         fun initial() = GameState(
