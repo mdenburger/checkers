@@ -9,23 +9,18 @@ import io.github.mdenburger.checkers.domain.SquareNumber
 
 fun Terminal.readMove(player: Color): Move {
     while (true) {
-        kotlin.io.print("$player move: ")
-        val move = readMove()
-        if (move == null) {
-            println(brightRed("Illegal move"))
-        } else {
-            return move
+        print("$player move: ")
+        val inputOrNull = readLineOrNull(hideInput = false) ?: return Move.Quit
+
+        try {
+            parseMove(inputOrNull)?.let {
+                return it
+            }
+        } catch (e: RuntimeException) {
+            println(brightRed("Illegal move: $inputOrNull"))
         }
     }
 }
-
-private fun readMove(): Move? =
-    try {
-        val input = readln()
-        parseMove(input)
-    } catch (e: RuntimeException) {
-        Move.Quit
-    }
 
 fun parseMove(s: String): Move? =
     if (s.contains("-")) {

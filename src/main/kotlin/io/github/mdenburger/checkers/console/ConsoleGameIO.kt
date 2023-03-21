@@ -25,7 +25,7 @@ class ConsoleGameIO : GameIO {
         terminal.println("The black squares are numbered 1 to $TOTAL_SQUARE_COUNT.")
         terminal.println("The first square number of each row is shown left of the board.")
         terminal.println()
-        terminal.println("Use these 'square numbers' to specify moves. For example:")
+        terminal.println("Use these square numbers to specify moves. For example:")
         terminal.println("  31-26  slides from square 31 to square 26")
         terminal.println("  26x17  jumps from square 26 to square 17 and captures the piece at square 21")
         terminal.println()
