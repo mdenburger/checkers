@@ -59,7 +59,7 @@ class GameStateTest {
 
     @Test
     fun `black is the winner`() {
-        val board = listOf(
+        val squares = listOf(
             W, x, W, x, x,
             x, x, x, x, x,
             x, x, x, x, x,
@@ -71,14 +71,14 @@ class GameStateTest {
             x, B, x, x, x,
             x, x, B, x, x,
         )
-        val gameState = GameState(GameBoard(board), Color.Black, false)
+        val gameState = GameState(GameBoard(squares), Color.Black, false)
 
         assertThat(gameState.getWinner()).isEqualTo(Color.Black)
     }
 
     @Test
     fun `white is the winner`() {
-        val board = listOf(
+        val squares = listOf(
             x, x, x, x, x,
             W, x, x, x, x,
             x, x, x, x, x,
@@ -90,14 +90,39 @@ class GameStateTest {
             x, B, x, x, x,
             B, B, B, x, x,
         )
-        val gameState = GameState(GameBoard(board), Color.White, false)
+        val gameState = GameState(GameBoard(squares), Color.White, false)
 
         assertThat(gameState.getWinner()).isEqualTo(Color.White)
     }
 
     @Test
+    fun `only forward slides are allowed`() {
+        val squares = listOf(
+              B, B, B, B, B,
+            B, B, B, B, B,
+              B, B, B, B, B,
+            B, B, x, B, B,
+              x, B, x, x, x,
+            W, x, x, x, x,
+              x, W, W, W, W,
+            W, W, W, W, W,
+              W, W, W, W, W,
+            W, W, W, W, W,
+        )
+
+        val whitesTurn = GameState(GameBoard(squares), Color.White, false)
+        val blacksTurn = GameState(GameBoard(squares), Color.Black, false)
+
+        assertTrue(whitesTurn.isValidMove(Move.Slide(36.square, 31.square)))
+        assertTrue(blacksTurn.isValidMove(Move.Slide(16.square, 21.square)))
+
+        assertFalse(whitesTurn.isValidMove(Move.Slide(26.square, 32.square)))
+        assertFalse(blacksTurn.isValidMove(Move.Slide(22.square, 18.square)))
+    }
+
+    @Test
     fun `capturing is mandatory`() {
-        val board = listOf(
+        val squares = listOf(
             B, B, B, B, B,
             B, B, B, B, B,
             B, B, B, B, B,
@@ -109,7 +134,7 @@ class GameStateTest {
             W, W, W, W, W,
             W, W, W, W, W,
         )
-        val gameState = GameState(GameBoard(board), Color.White, false)
+        val gameState = GameState(GameBoard(squares), Color.White, false)
         val invalidSlide = Move.Slide(36.square, 31.square)
 
         assertFalse(

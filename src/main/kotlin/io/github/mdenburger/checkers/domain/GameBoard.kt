@@ -3,6 +3,7 @@ package io.github.mdenburger.checkers.domain
 /**
  * Width and height of the game board in squares.
  * International checkers uses a 10x10 board.
+ * Set to 8 to play American checkers.
  */
 const val SIZE = 10
 
