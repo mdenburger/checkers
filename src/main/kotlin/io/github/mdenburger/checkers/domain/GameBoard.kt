@@ -34,21 +34,7 @@ class GameBoard(private val squares: List<Square>) {
 
     fun isValidJump(jump: Move.Jump, activePlayer: Color): Boolean =
         squares[jump.from.index()].color() == activePlayer &&
-        this.isValidJumpPath(jump, activePlayer)
-
-    private fun isValidJumpPath(jump: Move.Jump, activePlayer: Color): Boolean {
-        if (jump.to.isEmpty()) {
-            return true
-        }
-
-        val jumpOptions = jump.from.jumpOptions()
-
-        return jumpOptions.any { option ->
-            option.to == jump.to.first() &&
-            squares[option.to.index()] == Square.EMPTY &&
-            squares[option.captured.index()].color() == activePlayer.opponent()
-        } && this.applyJump(jump.firstStep()).isValidJumpPath(jump.remainingSteps(), activePlayer)
-    }
+                this.isValidJumpPath(jump, activePlayer)
 
     fun applyJump(jump: Move.Jump): GameBoard =
         if (jump.to.isEmpty()) {
@@ -80,5 +66,20 @@ class GameBoard(private val squares: List<Square>) {
                         List(piecesPerPlayer) { Square.WHITE_MAN },
             )
         }
+
+        private tailrec fun GameBoard.isValidJumpPath(jump: Move.Jump, activePlayer: Color): Boolean {
+            val remainingSteps: Move.Jump = jump.remainingSteps()
+
+            return if (remainingSteps.to.isEmpty()) {
+                jump.from.jumpOptions().any { option ->
+                    option.to == jump.to.first() &&
+                            squares[option.to.index()] == Square.EMPTY &&
+                            squares[option.captured.index()].color() == activePlayer.opponent()
+                }
+            } else {
+                applyJump(jump.firstStep()).isValidJumpPath(remainingSteps, activePlayer)
+            }
+        }
     }
 }
+
