@@ -8,7 +8,8 @@ data class GameState(
     fun isValidMove(move: Move): Boolean =
         when (move) {
             is Move.Slide -> board.isValidSlide(move, activePlayer) &&
-                    this.allValidJumps(activePlayer).isEmpty()
+                    this.allValidJumps(activePlayer).none()
+
             is Move.Jump -> board.isValidJump(move, activePlayer)
             Move.Quit -> true
         }
@@ -29,33 +30,33 @@ data class GameState(
         }
 
     fun getWinner(): Color? =
-        if (allValidMoves(Color.White).isEmpty()) {
+        if (allValidMoves(Color.White).none()) {
             Color.Black
-        } else if (allValidMoves(Color.Black).isEmpty()) {
+        } else if (allValidMoves(Color.Black).none()) {
             Color.White
         } else {
             null
         }
 
-    private fun allValidMoves(player: Color): List<Move> =
+    private fun allValidMoves(player: Color): Sequence<Move> =
         allValidSlides(player) + allValidJumps(player)
 
-    private fun allValidSlides(player: Color): List<Move.Slide> =
-        (1..TOTAL_SQUARE_COUNT)
+    private fun allValidSlides(player: Color): Sequence<Move.Slide> =
+        (1..TOTAL_SQUARE_COUNT).asSequence()
             .map { it.square }
             .flatMap { allValidSlidesFrom(it, player) }
 
-    private fun allValidSlidesFrom(from: SquareNumber, player: Color): List<Move.Slide> =
+    private fun allValidSlidesFrom(from: SquareNumber, player: Color): Sequence<Move.Slide> =
         from.slideOptions(player)
             .map { to -> Move.Slide(from, to) }
             .filter { slide -> board.isValidSlide(slide, player) }
 
-    private fun allValidJumps(player: Color): List<Move.Jump> =
-        (1..TOTAL_SQUARE_COUNT)
+    private fun allValidJumps(player: Color): Sequence<Move.Jump> =
+        (1..TOTAL_SQUARE_COUNT).asSequence()
             .map { it.square }
             .flatMap { allValidJumpsFrom(it, player) }
 
-    private fun allValidJumpsFrom(from: SquareNumber, player: Color): List<Move.Jump> =
+    private fun allValidJumpsFrom(from: SquareNumber, player: Color): Sequence<Move.Jump> =
         from.jumpOptions()
             .map { jumpOption -> Move.Jump(from, listOf(jumpOption.to)) }
             .filter { jump -> board.isValidJump(jump, player) }
